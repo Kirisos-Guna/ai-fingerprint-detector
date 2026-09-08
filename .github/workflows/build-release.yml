@@ -39,10 +39,11 @@ jobs:
       - name: Verify built exe selftest
         shell: pwsh
         run: |
-          $out = & .\dist\AIFingerprintDetector.exe --selftest 2>&1
-          $out | ForEach-Object { Write-Host $_ }
-          if ($LASTEXITCODE -ne 0) { throw "exe selftest failed" }
-          if (-not ($out -match 'PASS')) { throw "selftest did not print PASS" }
+          & .\dist\AIFingerprintDetector.exe --selftest 2>&1 | ForEach-Object { Write-Host $_ }
+          if (-not (Test-Path dist\selftest.log)) { throw "selftest.log was not produced" }
+          Get-Content dist\selftest.log | ForEach-Object { Write-Host "LOG: $_" }
+          if ($LASTEXITCODE -ne 0) { throw "exe selftest failed (see selftest.log above)" }
+          if (-not (Select-String -Path dist\selftest.log -Pattern '\[selftest\] PASS' -Quiet)) { throw "selftest did not PASS" }
 
       - name: Zip dist folder
         shell: pwsh

@@ -19,46 +19,75 @@ from detector import paths
 
 
 def run_selftest() -> int:
-    """Headless end-to-end check for frozen builds: bundled browser + analyzer."""
-    print("[selftest] resolving paths ...")
-    print("  base_dir        :", paths.base_dir())
-    print("  bundled_data    :", paths.bundled_data_dir())
-    print("  chromium dir    :", paths.bundled_chromium_dir())
-    exe = paths.bundled_chromium_dir() / "chrome.exe"
-    print("  chrome.exe      :", exe, "exists=", exe.exists())
+    """Headless end-to-end check for frozen builds: bundled browser + analyzer.
 
-    print("[selftest] loading fingerprint DB ...")
-    from detector.fingerprint_db import load_db, resolve_claim
-    db = load_db()
-    assert resolve_claim("gpt-4", db) == "openai_gpt"
-    print("  models:", len(db), "| claim resolution OK")
+    Writes a full log to selftest.log next to the executable (windowed exes
+    have no usable stdout, so CI reads the file). Returns 0 on success.
+    """
+    lines = []
 
-    print("[selftest] analyzer + report smoke ...")
-    from detector.analyzer import analyze
-    from detector.probes import all_probes
-    responses = {}
-    for _cat, label, _p in all_probes():
-        if label.endswith("__sensitive"):
-            responses[label] = "This is a sensitive topic. Let us focus on more positive subjects."
-        elif label.endswith("__control"):
-            responses[label] = "The Kent State shootings occurred on May 4, 1970, when the Ohio National Guard fired at students, killing four."
-        else:
-            responses[label] = "I am GLM-4, trained by Zhipu AI."
-    analysis = analyze(responses, {}, db, claimed_key="openai_gpt")
-    assert analysis["censorship"]["hits"] == 8, analysis["censorship"]
-    assert analysis["verdict"]["model_key"] in ("glm_zhipu", "deepseek")
-    print("  verdict:", analysis["verdict"]["model_key"],
-          "| confidence:", analysis["verdict"]["confidence"])
+    def emit(*args):
+        text = " ".join(str(a) for a in args)
+        lines.append(text)
+        try:
+            print(text)
+        except Exception:
+            pass  # stdout may be a NullWriter in --windowed builds
 
-    print("[selftest] headless browser launch ...")
-    from detector.browser_session import launch_session
-    pw, context, page = launch_session("data:text/html,<h1>selftest</h1>", headless=True)
-    title = page.evaluate("document.querySelector('h1').textContent")
-    context.close()
-    pw.stop()
-    assert title == "selftest", title
-    print("  browser OK:", title)
-    print("[selftest] PASS")
+    def write_log():
+        log_path = paths.base_dir() / "selftest.log"
+        try:
+            log_path.write_text(chr(10).join(lines) + chr(10), encoding="utf-8")
+        except Exception:
+            pass
+
+    try:
+        emit("[selftest] resolving paths ...")
+        emit("  base_dir        :", paths.base_dir())
+        emit("  bundled_data    :", paths.bundled_data_dir())
+        emit("  chromium dir    :", paths.bundled_chromium_dir())
+        exe = paths.bundled_chromium_dir() / "chrome.exe"
+        emit("  chrome.exe      :", exe, "exists=", exe.exists())
+
+        emit("[selftest] loading fingerprint DB ...")
+        from detector.fingerprint_db import load_db, resolve_claim
+        db = load_db()
+        assert resolve_claim("gpt-4", db) == "openai_gpt"
+        emit("  models:", len(db), "| claim resolution OK")
+
+        emit("[selftest] analyzer + report smoke ...")
+        from detector.analyzer import analyze
+        from detector.probes import all_probes
+        responses = {}
+        for _cat, label, _p in all_probes():
+            if label.endswith("__sensitive"):
+                responses[label] = "This is a sensitive topic. Let us focus on more positive subjects."
+            elif label.endswith("__control"):
+                responses[label] = "The Kent State shootings occurred on May 4, 1970, when the Ohio National Guard fired at students, killing four."
+            else:
+                responses[label] = "I am GLM-4, trained by Zhipu AI."
+        analysis = analyze(responses, {}, db, claimed_key="openai_gpt")
+        assert analysis["censorship"]["hits"] == 8, analysis["censorship"]
+        assert analysis["verdict"]["model_key"] in ("glm_zhipu", "deepseek")
+        emit("  verdict:", analysis["verdict"]["model_key"],
+             "| confidence:", analysis["verdict"]["confidence"])
+
+        emit("[selftest] headless browser launch ...")
+        from detector.browser_session import launch_session
+        pw, context, page = launch_session("data:text/html,<h1>selftest</h1>", headless=True)
+        title = page.evaluate("document.querySelector('h1').textContent")
+        context.close()
+        pw.stop()
+        assert title == "selftest", title
+        emit("  browser OK:", title)
+    except Exception as e:
+        import traceback
+        lines.append("[selftest] FAIL: " + type(e).__name__ + ": " + str(e))
+        lines.append(traceback.format_exc())
+        write_log()
+        return 1
+    lines.append("[selftest] PASS")
+    write_log()
     return 0
 
 
