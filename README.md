@@ -1,5 +1,7 @@
 # AI Chat Model Fingerprint Detector
 
+[![Build Windows exe](https://github.com/Kirisos-Guna/ai-fingerprint-detector/actions/workflows/build-release.yml/badge.svg)](https://github.com/Kirisos-Guna/ai-fingerprint-detector/actions/workflows/build-release.yml)
+
 Determines which AI model **actually powers** a chat website — regardless of
 what the site claims. It launches a real browser (Playwright), lets you
 calibrate the site's UI once, then automatically sends a battery of probe
@@ -109,7 +111,18 @@ appear as popups (the browser window itself is where you click elements during
 first-time calibration). Live progress, verdict panel, and buttons to open the
 JSON/Markdown reports are all in the app.
 
-## Windows .exe
+## Download prebuilt exe
+
+Ready-made builds are attached to GitHub Releases (built automatically by
+GitHub Actions on every `v*` tag, selftest-verified before upload):
+
+```bash
+gh release download --repo Kirisos-Guna/ai-fingerprint-detector --pattern "*-win64.zip"
+```
+
+or grab the zip from the Releases page and unzip anywhere.
+
+## Windows .exe (build it yourself)
 
 Build it yourself:
 
