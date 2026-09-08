@@ -189,6 +189,11 @@ Add a model to `fingerprints/models.json`:
 Then add self-ID regexes in `detector/analyzer.py` (`_SELF_ID_PATTERNS`) and,
 if relevant, family membership in `PRC_FAMILY` / `WESTERN_FAMILY`.
 
+## License
+
+MIT — see [LICENSE](LICENSE). You are free to use, modify, and redistribute
+this tool, including commercially.
+
 ## Legal / responsible use
 
 Only test sites you are authorized to test. Probing sends real prompts to the
