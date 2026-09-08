@@ -1,12 +1,33 @@
 # AI Chat Model Fingerprint Detector
 
 [![Build Windows exe](https://github.com/Kirisos-Guna/ai-fingerprint-detector/actions/workflows/build-release.yml/badge.svg)](https://github.com/Kirisos-Guna/ai-fingerprint-detector/actions/workflows/build-release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 
 Determines which AI model **actually powers** a chat website — regardless of
 what the site claims. It launches a real browser (Playwright), lets you
 calibrate the site's UI once, then automatically sends a battery of probe
 prompts, captures network traffic, and scores the evidence into a verdict
 report.
+
+## Features
+
+- **Automatic probing** — sends a battery of censorship pairs, self-ID, and
+  reasoning-leak prompts through any chat UI, no manual copy-pasting
+- **Paired censorship detection** — every sensitive prompt has a structurally
+  identical control prompt, so deflection patterns are measured, not guessed
+- **Passive network fingerprinting** — watches page traffic for known provider
+  API domains and distinctive response headers (the strongest signal)
+- **One-time calibration** — auto-detects the chat input/send/response
+  selectors with a click-to-pick fallback; cached per site, reused forever
+- **Persistent logins** — per-domain browser profiles mean you log in once
+- **Claim vs. verdict** — tell it what the site claims to be and get an
+  explicit match / same-family / disagreement judgment
+- **Three report formats** — machine-readable JSON, human-readable Markdown,
+  and a colorized terminal summary
+- **Desktop GUI + portable exe** — CustomTkinter app packaged with bundled
+  Chromium; runs on any Windows 10/11 machine with zero setup
 
 ## How it decides
 
