@@ -1,0 +1,11 @@
+profiles/
+reports/
+config/sites/*.json
+__pycache__/
+*.pyc
+.venv/
+
+dist/
+build/
+*.spec
+.freebuff/

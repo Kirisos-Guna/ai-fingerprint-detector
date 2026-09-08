@@ -1,0 +1,4 @@
+playwright>=1.40
+rich>=13.0
+customtkinter>=5.2
+pyinstaller>=6.0

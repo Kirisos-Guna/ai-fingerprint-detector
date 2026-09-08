@@ -1,0 +1,82 @@
+{
+  "openai_gpt": {
+    "display_name": "OpenAI (ChatGPT / GPT-4 / GPT-4o)",
+    "network": {
+      "domains": ["api.openai.com", "chatgpt.com", "chat.openai.com", "cdn.oaistatic.com"],
+      "headers": ["openai-organization", "openai-processing-ms", "openai-version", "x-ratelimit-limit-requests", "x-ratelimit-remaining-tokens"]
+    },
+    "notes": "Streaming responses use SSE 'data: {...}' lines with object 'chat.completion.chunk' and choices[].delta.content."
+  },
+  "anthropic_claude": {
+    "display_name": "Anthropic Claude",
+    "network": {
+      "domains": ["api.anthropic.com", "claude.ai"],
+      "headers": ["anthropic-ratelimit-requests-limit", "anthropic-ratelimit-tokens-limit", "anthropic-organization-id"]
+    },
+    "notes": "SSE uses named events: message_start, content_block_delta, message_stop."
+  },
+  "google_gemini": {
+    "display_name": "Google Gemini",
+    "network": {
+      "domains": ["generativelanguage.googleapis.com", "gemini.google.com", "bard.google.com"],
+      "headers": []
+    },
+    "notes": "Few distinctive headers; rely more on domain contact + self-identification probes."
+  },
+  "mistral_ai": {
+    "display_name": "Mistral AI",
+    "network": {
+      "domains": ["api.mistral.ai"],
+      "headers": []
+    },
+    "notes": ""
+  },
+  "meta_llama": {
+    "display_name": "Meta Llama (open-source, often self-hosted)",
+    "network": {
+      "domains": [],
+      "headers": []
+    },
+    "notes": "Usually self-hosted by third parties, so no consistent domain/header fingerprint; rely on self-id and behavioral probes."
+  },
+  "deepseek": {
+    "display_name": "DeepSeek (China)",
+    "network": {
+      "domains": ["api.deepseek.com", "chat.deepseek.com"],
+      "headers": []
+    },
+    "notes": "R1 reasoning variants often leak literal <think>...</think> tags in raw output if the wrapper UI fails to strip them. Known to give canned deflections on PRC-sensitive political topics."
+  },
+  "qwen": {
+    "display_name": "Qwen / Alibaba (China)",
+    "network": {
+      "domains": ["dashscope.aliyuncs.com", "chat.qwen.ai", "qwenlm.ai"],
+      "headers": []
+    },
+    "notes": "Known to give canned deflections on PRC-sensitive political topics."
+  },
+  "glm_zhipu": {
+    "display_name": "GLM / Zhipu AI (China)",
+    "network": {
+      "domains": ["open.bigmodel.cn", "chatglm.cn"],
+      "headers": []
+    },
+    "notes": "Known to give canned deflections on PRC-sensitive political topics."
+  },
+  "moonshot_kimi": {
+    "display_name": "Moonshot Kimi (China)",
+    "network": {
+      "domains": ["api.moonshot.cn", "kimi.moonshot.cn"],
+      "headers": []
+    },
+    "notes": "Known to give canned deflections on PRC-sensitive political topics."
+  },
+  "ernie_baidu": {
+    "display_name": "Baidu ERNIE / Wenxin (China)",
+    "network": {
+      "domains": ["aip.baidubce.com", "yiyan.baidu.com"],
+      "headers": []
+    },
+    "notes": "Known to give canned deflections on PRC-sensitive political topics."
+  }
+}
