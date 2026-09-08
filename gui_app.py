@@ -243,7 +243,8 @@ class App(ctk.CTk):
         super().__init__()
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
-        self.title("AI Model Fingerprint Detector")
+        from detector.version import APP_NAME, APP_VERSION
+        self.title(f"{APP_NAME} v{APP_VERSION}")
         self.geometry("880x680")
         self.minsize(760, 560)
 
@@ -255,7 +256,20 @@ class App(ctk.CTk):
         self._build_controls()
         self._build_log_area()
         self._build_status_bar()
+        self._apply_icon()
         self.after(100, self._pump_events)
+
+    def _apply_icon(self):
+        """Set the window/taskbar icon; works from source and when frozen."""
+        try:
+            if paths.is_frozen():
+                ico = paths.bundled_data_dir() / "assets" / "icon.ico"
+            else:
+                ico = paths.base_dir() / "assets" / "icon.ico"
+            if ico.exists():
+                self.iconbitmap(str(ico))
+        except Exception:
+            pass  # cosmetic only
 
     # ------------------------------------------------------------ UI build
 
