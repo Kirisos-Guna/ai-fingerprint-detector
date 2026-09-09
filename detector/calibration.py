@@ -20,8 +20,15 @@ from playwright.sync_api import Page
 CONFIG_DIR = paths.sites_config_dir()
 
 # Computes a reasonably unique CSS selector path for an arbitrary clicked element.
+#
+# NOTE: these snippets are concatenated with arrow-function expressions and
+# evaluated via page.evaluate(). They MUST be `const ... = (..) => {...};`
+# declarations ending in a semicolon: a bare `function name() {}` at the start
+# makes Playwright paren-wrap the whole string (it only normalizes expressions
+# that begin with the `function` keyword), which mangles the concatenation and
+# throws "SyntaxError: Malformed arrow function parameter list".
 _CSS_PATH_JS = """
-function cssPath(el) {
+const cssPath = (el) => {
     if (!(el instanceof Element)) return null;
     const path = [];
     while (el && el.nodeType === Node.ELEMENT_NODE) {
@@ -43,13 +50,14 @@ function cssPath(el) {
         if (path.length > 8) break;
     }
     return path.join(' > ');
-}
+};
 """
 
 # Walk up from a clicked element to the nearest ancestor with classes, used
 # for the response bubble so future lookups can match ALL sibling messages.
+# Same constraint as _CSS_PATH_JS: const-arrow with a trailing semicolon.
 _REPEATABLE_JS = """
-function findRepeatableSelector(el) {
+const findRepeatableSelector = (el) => {
     let node = el;
     for (let i = 0; i < 6 && node; i++) {
         if (node.classList && node.classList.length > 0) {
@@ -59,7 +67,7 @@ function findRepeatableSelector(el) {
         node = node.parentElement;
     }
     return null;
-}
+};
 """
 
 # Default UI callbacks (console). The GUI injects thread-safe equivalents.
