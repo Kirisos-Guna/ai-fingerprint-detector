@@ -59,6 +59,7 @@ def main(argv=None) -> int:
     pw, context, page = launch_session(args.url, headless=args.headless)
     domain = domain_for(args.url)
 
+    capture = None  # bind before try so finally can't raise UnboundLocalError
     try:
         # -- calibration ----------------------------------------------------
         calibration = calibrate(page, domain, force=args.calibrate)
@@ -68,7 +69,6 @@ def main(argv=None) -> int:
         console.print(f"\n[bold]Running {len(probes)} probes "
                       f"(censorship pairs, self-ID, formatting)...[/bold]\n")
 
-        capture = None
         if not args.no_network_capture:
             capture = NetworkCapture(db)
             capture.attach(page)

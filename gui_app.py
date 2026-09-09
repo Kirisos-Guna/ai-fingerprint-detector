@@ -174,6 +174,7 @@ class Worker(threading.Thread):
             pw, context, page = launch_session(self.url, headless=self.headless)
             domain = domain_for(self.url)
 
+            capture = None  # bind before try so finally can't raise UnboundLocalError
             try:
                 calibration = calibrate(page, domain, force=self.force_calibrate,
                                         ui=gui_uis)
@@ -181,7 +182,6 @@ class Worker(threading.Thread):
                 probes = all_probes()
                 b.log(f"Running {len(probes)} probes ...")
 
-                capture = None
                 if not self.skip_network:
                     from detector.network_capture import NetworkCapture
                     capture = NetworkCapture(db)
